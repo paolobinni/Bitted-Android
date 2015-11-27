@@ -16,16 +16,20 @@ import android.view.MenuItem;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
+import android.widget.TextView;
 
 import com.supercow.bitted.bitted.R;
 import com.supercow.bitted.bitted.currentSessionHandler.CurrentSessionHandler;
 import com.supercow.bitted.bitted.dao.AdHomeAsyncTask;
+
+import java.util.Random;
 
 public class Home extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
 
     public ListAdapter adapter;
+    ListView list;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,8 +42,10 @@ public class Home extends AppCompatActivity
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                /*Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                        .setAction("Action", null).show();*/
+                Intent intent = new Intent(Home.this, NewAd.class);
+                startActivity(intent);
             }
         });
 
@@ -51,7 +57,7 @@ public class Home extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-
+/*
         try {
             new AdHomeAsyncTask().execute().get();
         }catch(Exception e){
@@ -64,9 +70,30 @@ public class Home extends AppCompatActivity
                 new int[]{R.id.nameTW, R.id.ownerTW, R.id.descriptionTW});
         ListView list = (ListView) findViewById(android.R.id.list);
         list.setAdapter(adapter);
+*/
 
 
+    }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        try {
+            new AdHomeAsyncTask().execute().get();
+        }catch(Exception e){
+
+        }
+        adapter = new SimpleAdapter(this,
+                CurrentSessionHandler.ads,
+                R.layout.card,
+                new String[] {"name", "owner", "description"},
+                new int[]{R.id.nameTW, R.id.ownerTW, R.id.descriptionTW});
+        list = (ListView) findViewById(android.R.id.list);
+        list.setAdapter(adapter);
+        for (int i = 0; i < list.getCount(); i++) {
+            updateBackgroundView(i);
+        }
     }
 
     @Override
@@ -127,4 +154,23 @@ public class Home extends AppCompatActivity
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
+
+
+    private void updateBackgroundView(int index){
+        View v = list.getChildAt(index -
+                list.getFirstVisiblePosition());
+
+        if(v == null)
+            return;
+
+        TextView nameTW = (TextView) v.findViewById(R.id.nameTW);
+        nameTW.setBackground(getResources().getDrawable(randomBackground()));
+    }
+
+
+    public int randomBackground(){
+        int[] bgs = {R.drawable.imbarivecchia, R.drawable.impane, R.drawable.imuni, R.drawable.wallp};
+        return new Random().nextInt(bgs.length);
+    }
+
 }

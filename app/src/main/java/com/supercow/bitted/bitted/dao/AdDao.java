@@ -5,6 +5,7 @@ import android.util.Log;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
+import com.supercow.bitted.bitted.currentSessionHandler.CurrentSessionHandler;
 import com.supercow.bitted.bitted.transferObject.Ad;
 import com.supercow.bitted.bitted.transferObject.Position;
 
@@ -33,7 +34,7 @@ public class AdDao {
         Gson gson = new Gson();
 
         try {
-            URL url = new URL("http://192.168.88.242:4567/api/ad");
+            URL url = new URL("http://"+CurrentSessionHandler.ip + ":4567"+"/api/ad");
             System.out.println(url.toString());
             conn = (HttpURLConnection) url.openConnection();
 
@@ -83,7 +84,7 @@ public class AdDao {
         List<Ad> listAd = new ArrayList<Ad>();
 
         try {
-            URL url = new URL("http://192.168.88.242:4567/api/ads");
+            URL url = new URL("http://"+CurrentSessionHandler.ip + ":4567"+"/api/ads");
             System.out.println(url.toString());
             conn = (HttpURLConnection) url.openConnection();
 

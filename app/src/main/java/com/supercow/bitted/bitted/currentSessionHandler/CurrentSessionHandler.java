@@ -8,6 +8,7 @@ import java.util.Map;
  */
 public class CurrentSessionHandler {
 
+    public static String ip = "192.168.88.242";
     public static String username;
     public static boolean accesso;
 

@@ -28,7 +28,7 @@ public class AccountDao {
         HttpURLConnection conn = null;
 
         try {
-            URL url = new URL("http://192.168.88.242:4567/api/account/"+ CurrentSessionHandler.getUsername());
+            URL url = new URL("http://"+CurrentSessionHandler.ip + ":4567"+"/api/account/"+ CurrentSessionHandler.getUsername());
             System.out.println(url.toString());
             conn = (HttpURLConnection) url.openConnection();
 

@@ -3,6 +3,7 @@ package com.supercow.bitted.bitted.dao;
 import android.util.Log;
 
 import com.google.gson.Gson;
+import com.supercow.bitted.bitted.currentSessionHandler.CurrentSessionHandler;
 import com.supercow.bitted.bitted.transferObject.Account;
 import com.supercow.bitted.bitted.transferObject.Ad;
 import com.supercow.bitted.bitted.transferObject.Position;
@@ -30,7 +31,7 @@ public class UserPositionDao {
         Gson gson = new Gson();
 
         try {
-            URL url = new URL("http://192.168.88.242:4567/api/position/");
+            URL url = new URL("http://"+ CurrentSessionHandler.ip + ":4567"+"/api/position/");
             System.out.println(url.toString());
             conn = (HttpURLConnection) url.openConnection();
 
