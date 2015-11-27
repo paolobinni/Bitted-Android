@@ -29,9 +29,13 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.supercow.bitted.bitted.R;
 import com.supercow.bitted.bitted.currentSessionHandler.CurrentSessionHandler;
+import com.supercow.bitted.bitted.dao.AccountDao;
+import com.supercow.bitted.bitted.dao.MyAsyncTask;
+import com.supercow.bitted.bitted.transferObject.Account;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -159,6 +163,7 @@ public class Login extends AppCompatActivity implements LoaderCallbacks<Cursor> 
         // Store values at the time of the login attempt.
         String email = mEmailView.getText().toString();
         String password = mPasswordView.getText().toString();
+        System.out.println(email + password);
         CurrentSessionHandler.setUsername(email);
 
         boolean cancel = false;
@@ -192,18 +197,22 @@ public class Login extends AppCompatActivity implements LoaderCallbacks<Cursor> 
             showProgress(true);
             mAuthTask = new UserLoginTask(email, password);
             //mAuthTask.execute((Void) null);
-            goHome();
+            if (checkLogin(email, password))
+                goHome();
+            else {
+                Toast.makeText(this, "Ops, Account non valido !", Toast.LENGTH_LONG).show();
+            }
         }
     }
 
     private boolean isEmailValid(String email) {
         //TODO: Replace this with your own logic
-        return email.contains("@");
+        return true;
     }
 
     private boolean isPasswordValid(String password) {
         //TODO: Replace this with your own logic
-        return password.length() > 4;
+        return true;
     }
 
     /**
@@ -355,9 +364,32 @@ public class Login extends AppCompatActivity implements LoaderCallbacks<Cursor> 
 
     }
 
-    public void goHome(){
+    public void goHome() {
         Intent in = new Intent(Login.this, Home.class);
         startActivity(in);
     }
+
+    public boolean checkLogin(String username, String password) {
+        //System.out.println("####"+username+password);
+        /*AccountDao accountDao = new AccountDao();
+        Account account = accountDao.getAccount(username);*/
+        try {
+            new MyAsyncTask().execute().get();
+        } catch (Exception e) {
+
+        }
+        if (CurrentSessionHandler.isAccesso()) {
+            return true;
+        }
+        return false;
+        /*if (account == null){
+            return false;
+        }
+        else {
+            return account.getPassword().equals(password);
+        }*/
+
+    }
+
 }
 

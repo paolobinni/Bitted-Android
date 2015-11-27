@@ -21,12 +21,21 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+
         </activity>
         <activity
             android:name=".controller.Home"
             android:label="@string/title_activity_home"
             android:theme="@style/AppTheme.NoActionBar" >
+
+        </activity>
+        <activity
+            android:name=".controller.ManageIp"
+            android:label="@string/title_activity_manage_ip"
+            android:theme="@style/AppTheme.NoActionBar" >
         </activity>
     </application>
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
 </manifest>
