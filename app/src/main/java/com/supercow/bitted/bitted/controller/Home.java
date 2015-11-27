@@ -1,6 +1,14 @@
 package com.supercow.bitted.bitted.controller;
 
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -17,7 +25,11 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationServices;
 import com.supercow.bitted.bitted.R;
 import com.supercow.bitted.bitted.currentSessionHandler.CurrentSessionHandler;
 import com.supercow.bitted.bitted.dao.AdHomeAsyncTask;
@@ -25,9 +37,9 @@ import com.supercow.bitted.bitted.dao.AdHomeAsyncTask;
 import java.util.Random;
 
 public class Home extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener{
 
-
+    GoogleApiClient mGoogleApiClient;
     public ListAdapter adapter;
     ListView list;
 
@@ -57,6 +69,9 @@ public class Home extends AppCompatActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+
+        startService(new Intent(this, LocationService.class));
 /*
         try {
             new AdHomeAsyncTask().execute().get();
@@ -94,6 +109,14 @@ public class Home extends AppCompatActivity
         for (int i = 0; i < list.getCount(); i++) {
             updateBackgroundView(i);
         }
+    }
+
+    protected synchronized void buildGoogleApiClient() {
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .addApiIfAvailable(LocationServices.API)
+                .build();
     }
 
     @Override
@@ -157,14 +180,12 @@ public class Home extends AppCompatActivity
 
 
     private void updateBackgroundView(int index){
-        View v = list.getChildAt(index -
-                list.getFirstVisiblePosition());
-
+        View v = list.getChildAt(index - list.getFirstVisiblePosition() - list.getHeaderViewsCount());
         if(v == null)
             return;
 
         TextView nameTW = (TextView) v.findViewById(R.id.nameTW);
-        nameTW.setBackground(getResources().getDrawable(randomBackground()));
+        nameTW.setBackgroundResource(randomBackground());
     }
 
 
@@ -173,4 +194,64 @@ public class Home extends AppCompatActivity
         return new Random().nextInt(bgs.length);
     }
 
+
+
+
+    public String getLocation(){
+
+        LocationManager locationManager = (LocationManager) this.getSystemService(Context.LOCATION_SERVICE);
+        LocationListener ll = new LocationListener() {
+            @Override
+            public void onLocationChanged(Location location) {
+            }
+
+            @Override
+            public void onStatusChanged(String provider, int status, Bundle extras) {
+            }
+            @Override
+            public void onProviderEnabled(String provider) { }
+            @Override
+            public void onProviderDisabled(String provider) { }
+        };
+
+        Location location;
+        Double lat,lon;
+        String ret = null;
+
+        try{
+            location = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+            lat = location.getLatitude();
+            lon = location.getLongitude();
+            ret =  lat + ", " + lon;
+        }catch (SecurityException e){
+            e.printStackTrace();
+        }catch(NullPointerException e){
+            e.printStackTrace();
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+        return ret;
+    }
+
+
+    @Override
+    public void onConnected(Bundle bundle) {
+        Location mLastLocation;
+        mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
+                mGoogleApiClient);
+        if (mLastLocation != null) {
+            Toast.makeText(this, "not", Toast.LENGTH_LONG).show();
+
+        }
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+
+    }
+
+    @Override
+    public void onConnectionFailed(ConnectionResult connectionResult) {
+
+    }
 }
